@@ -1,5 +1,5 @@
 "use client";
-
+import LocationSelector from "@/components/LocationSelector";
 import { useEffect, useState } from "react";
 import { getWeather } from "../lib/weatherService";
 
