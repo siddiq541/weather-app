@@ -1,7 +1,7 @@
-'use client';
-import { useEffect, useState } from 'react';
-import LocationSelector from '../components/LocationSelector';
-import { getWeather } from '../lib/weatherService';
+"use client";
+import LocationSelector from "@/components/LocationSelector";
+import { useEffect, useState } from "react";
+import { getWeather } from "../lib/weatherService";
 
 export default function Page() {
   const [selectedCity, setSelectedCity] = useState(null);
