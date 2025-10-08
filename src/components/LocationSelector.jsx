@@ -18,20 +18,20 @@ export default function LocationSelector({ onCityFound }) {
     setError(null);
 
     try {
+      const apiKey = process.env.NEXT_PUBLIC_WEATHER_API_KEY;
       const response = await axios.get(
-        `https://api.openweathermap.org/geo/1.0/direct?q=${city}&limit=1&appid=${process.env.NEXT_PUBLIC_WEATHER_API_KEY}`
+        `https://api.openweathermap.org/geo/1.0/direct?q=${encodeURIComponent(city)}&limit=1&appid=${apiKey}`
       );
 
-      if (response.data.length === 0) {
-        setError('City not found');
-        setLoading(false);
-        return;
+      if (!response.data || response.data.length === 0) {
+        throw new Error('City not found');
       }
 
       const { lat, lon, name, country } = response.data[0];
       onCityFound({ lat, lon, name, country });
     } catch (err) {
-      setError('City not found');
+      console.error('Location fetch error:', err.message);
+      setError('City not found. Please check the spelling or try a nearby location.');
     } finally {
       setLoading(false);
     }
@@ -54,7 +54,7 @@ export default function LocationSelector({ onCityFound }) {
           {loading ? 'Searching...' : 'Search'}
         </button>
       </div>
-      {error && <p className="text-red-500">{error}</p>}
+      {error && <p className="text-red-500 text-sm text-center">{error}</p>}
     </div>
   );
 }
@@ -62,7 +62,3 @@ export default function LocationSelector({ onCityFound }) {
 LocationSelector.propTypes = {
   onCityFound: PropTypes.func.isRequired,
 };
-
-
-
- 
