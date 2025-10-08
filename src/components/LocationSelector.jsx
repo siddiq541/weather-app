@@ -44,11 +44,11 @@ export default function LocationSelector({ onCityFound }) {
           value={city}
           onChange={(e) => setCity(e.target.value)}
           placeholder="Enter city name"
-          className="border p-2 rounded w-full sm:w-64 focus:outline-none focus:ring-2 focus:ring-blue-400"
+          className="border p-2 rounded w-full sm:w-64 focus:outline-none focus:ring-2 focus:ring-blue-400 text-black placeholder-gray-400"
         />
         <button
           onClick={handleSearch}
-          className="bg-blue-500 hover:bg-blue-600 text-white p-2 rounded disabled:opacity-50"
+          className="bg-blue-500 hover:bg-blue-600 text-black p-2 rounded disabled:opacity-50"
           disabled={loading}
         >
           {loading ? 'Searching...' : 'Search'}
