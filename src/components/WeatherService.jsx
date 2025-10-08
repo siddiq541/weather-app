@@ -3,9 +3,14 @@ export async function getWeather(lat, lon) {
     throw new Error('Latitude and longitude are required');
   }
 
+  const today = new Date().toISOString().split('T')[0];
+  const endDate = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)
+    .toISOString()
+    .split('T')[0];
+
   try {
     const response = await fetch(
-      `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true&daily=temperature_2m_max,temperature_2m_min,weathercode,windspeed_10m&temperature_unit=celsius&windspeed_unit=kmh&timezone=auto`
+      `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true&daily=temperature_2m_max,temperature_2m_min,windspeed_10m,weathercode&temperature_unit=celsius&windspeed_unit=kmh&timezone=auto&start_date=${today}&end_date=${endDate}`
     );
 
     if (!response.ok) {
@@ -13,7 +18,7 @@ export async function getWeather(lat, lon) {
     }
 
     const data = await response.json();
-    console.log('Weather API response:', data);
+    console.log('Open-Meteo response:', data);
 
     if (!data || !data.daily || !data.current_weather) {
       throw new Error('Incomplete weather data received');
@@ -25,3 +30,15 @@ export async function getWeather(lat, lon) {
     throw new Error('Unable to fetch weather data. Please try again later.');
   }
 }
+
+
+
+
+
+
+
+
+
+
+
+

@@ -3,6 +3,8 @@ import { useState } from 'react';
 import axios from 'axios';
 import PropTypes from 'prop-types';
 
+const GEO_API_KEY = 'c675a60b384197ee49b63a477a54c5f4';
+
 export default function LocationSelector({ onCityFound }) {
   const [city, setCity] = useState('');
   const [error, setError] = useState(null);
@@ -18,9 +20,8 @@ export default function LocationSelector({ onCityFound }) {
     setError(null);
 
     try {
-      const apiKey = process.env.NEXT_PUBLIC_WEATHER_API_KEY;
       const response = await axios.get(
-        `https://api.openweathermap.org/geo/1.0/direct?q=${encodeURIComponent(city)}&limit=1&appid=${apiKey}`
+        `https://api.openweathermap.org/geo/1.0/direct?q=${encodeURIComponent(city)}&limit=1&appid=${GEO_API_KEY}`
       );
 
       if (!response.data || response.data.length === 0) {
@@ -62,3 +63,4 @@ export default function LocationSelector({ onCityFound }) {
 LocationSelector.propTypes = {
   onCityFound: PropTypes.func.isRequired,
 };
+

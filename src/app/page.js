@@ -53,9 +53,24 @@ export default function Page() {
             <div className="mt-6 bg-white/10 p-4 rounded-lg border border-white/20">
               <h2 className="text-xl font-semibold mb-2">Current Weather</h2>
               <p>City: {selectedCity.name}, {selectedCity.country}</p>
-              <p>Temperature: {weather.current_weather?.temperature}°C</p>
-              <p>Wind Speed: {weather.current_weather?.windspeed} km/h</p>
-              <p>Time: {new Date(weather.current_weather?.time).toLocaleString()}</p>
+              <p>
+                Temperature:{" "}
+                {weather.current_weather?.temperature !== undefined
+                  ? `${weather.current_weather.temperature}°C`
+                  : "Unavailable"}
+              </p>
+              <p>
+                Wind Speed:{" "}
+                {weather.current_weather?.windspeed !== undefined
+                  ? `${weather.current_weather.windspeed} km/h`
+                  : "Unavailable"}
+              </p>
+              <p>
+                Time:{" "}
+                {weather.current_weather?.time
+                  ? new Date(weather.current_weather.time).toLocaleString()
+                  : "Unavailable"}
+              </p>
             </div>
 
             {/* Next 7 Days */}
@@ -96,6 +111,4 @@ export default function Page() {
     </main>
   );
 }
-
-
 
