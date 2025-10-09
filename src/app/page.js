@@ -1,4 +1,4 @@
-"use client";
+'use client';
 import LocationSelector from "@/components/LocationSelector";
 import WeatherSummary from "@/components/WeatherSummary";
 import { useEffect, useState } from "react";
@@ -19,7 +19,7 @@ export default function Page() {
         const data = await getWeather(selectedCity.lat, selectedCity.lon);
         setWeather(data);
       } catch (err) {
-        setError('Unable to fetch weather data.');
+        setError(err.message || 'Unable to fetch weather data.');
         setWeather(null);
       } finally {
         setLoading(false);
@@ -50,35 +50,62 @@ export default function Page() {
 
         {selectedCity && weather && (
           <>
+            {/* Current Weather */}
             <div className="mt-6 bg-white/10 p-4 rounded-lg border border-white/20">
               <h2 className="text-xl font-semibold mb-2">Current Weather</h2>
               <p>City: {selectedCity.name}, {selectedCity.country}</p>
-              <p>Temperature: {weather.current_weather.temperature}°C</p>
-              <p>Wind Speed: {weather.current_weather.windspeed} km/h</p>
-              <p>Time: {weather.current_weather.time}</p>
+              <p>
+                Temperature:{" "}
+                {weather.current_weather?.temperature !== undefined
+                  ? `${weather.current_weather.temperature}°C`
+                  : "Unavailable"}
+              </p>
+              <p>
+                Wind Speed:{" "}
+                {weather.current_weather?.windspeed !== undefined
+                  ? `${weather.current_weather.windspeed} km/h`
+                  : "Unavailable"}
+              </p>
+              <p>
+                Time:{" "}
+                {weather.current_weather?.time
+                  ? new Date(weather.current_weather.time).toLocaleString()
+                  : "Unavailable"}
+              </p>
             </div>
 
-            <div className="mt-4 bg-white/10 p-4 rounded-lg border border-white/20">
-              <h2 className="text-xl font-semibold mb-2">Next 7 Hours</h2>
-              <div className="flex gap-4 overflow-x-auto scrollbar-hide">
-                {weather.hourly.time.slice(0, 7).map((time, index) => (
-                  <div
-                    key={time}
-                    className="min-w-[80px] bg-white/20 rounded-md p-2 text-center shadow-sm"
-                  >
-                    <p className="text-sm">
-                      {new Date(time).toLocaleTimeString([], {
-                        hour: '2-digit',
-                        minute: '2-digit',
-                      })}
-                    </p>
-                    <p className="text-lg font-semibold">
-                      {weather.hourly.temperature_2m[index]}°C
-                    </p>
-                  </div>
-                ))}
+            {/* Next 7 Days */}
+            {weather.daily?.time?.length > 0 ? (
+              <div className="mt-4 bg-white/10 p-4 rounded-lg border border-white/20">
+                <h2 className="text-xl font-semibold mb-2">Next 7 Days</h2>
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+                  {weather.daily.time.slice(0, 7).map((date, index) => (
+                    <div
+                      key={date}
+                      className="bg-white/20 rounded-md p-3 text-center shadow-sm"
+                    >
+                      <p className="text-sm font-medium">
+                        {new Date(date).toLocaleDateString([], {
+                          weekday: 'short',
+                          day: 'numeric',
+                          month: 'short',
+                        })}
+                      </p>
+                      <p className="text-lg font-semibold">
+                        {weather.daily.temperature_2m_max?.[index]}° / {weather.daily.temperature_2m_min?.[index]}°C
+                      </p>
+                      <p className="text-sm text-white/70">
+                        Wind: {weather.daily.windspeed_10m?.[index]} km/h
+                      </p>
+                    </div>
+                  ))}
+                </div>
               </div>
-            </div>
+            ) : (
+              <p className="mt-4 text-yellow-300 text-center">
+                Daily forecast is not available for this location. Try a nearby city or check back later.
+              </p>
+            )}
           </>
         )}
       </div>
