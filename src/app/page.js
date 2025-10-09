@@ -1,5 +1,6 @@
 "use client";
 import LocationSelector from "@/components/LocationSelector";
+import WeatherSummary from "@/components/WeatherSummary";
 import { useEffect, useState } from "react";
 import { getWeather } from "../lib/weatherService";
 
@@ -81,6 +82,13 @@ export default function Page() {
           </>
         )}
       </div>
+
+      {/* Weather Summary Component with DayCard */}
+      {selectedCity && (
+        <div className="mt-8 w-full max-w-6xl">
+          <WeatherSummary />
+        </div>
+      )}
     </main>
   );
 }
