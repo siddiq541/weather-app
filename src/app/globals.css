@@ -84,6 +84,7 @@ main {
   }
 }
 
+/* ===== Scrollbar (optional aesthetic) ===== */
 ::-webkit-scrollbar {
   width: 8px;
 }
