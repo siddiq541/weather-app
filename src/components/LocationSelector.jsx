@@ -3,8 +3,6 @@ import { useState } from 'react';
 import axios from 'axios';
 import PropTypes from 'prop-types';
 
-const GEO_API_KEY = 'c675a60b384197ee49b63a477a54c5f4';
-
 export default function LocationSelector({ onCityFound }) {
   const [city, setCity] = useState('');
   const [error, setError] = useState(null);
@@ -20,16 +18,19 @@ export default function LocationSelector({ onCityFound }) {
     setError(null);
 
     try {
-      const response = await axios.get(
-        `https://api.openweathermap.org/geo/1.0/direct?q=${encodeURIComponent(city)}&limit=1&appid=${GEO_API_KEY}`
-      );
+      // Geocode the city name
+      const geoRes = await axios.get(`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(city)}&count=1`);
+      const geoData = geoRes.data;
 
-      if (!response.data || response.data.length === 0) {
+     
+      if (!geoData || !geoData.results || geoData.results.length === 0) {
         throw new Error('City not found');
       }
 
-      const { lat, lon, name, country } = response.data[0];
-      onCityFound({ lat, lon, name, country });
+      const { latitude, longitude, name, country } = geoData.results[0];
+
+      // Pass location data to parent
+      onCityFound({ lat: latitude, lon: longitude, name, country });
     } catch (err) {
       console.error('Location fetch error:', err.message);
       setError('City not found. Please check the spelling or try a nearby location.');
