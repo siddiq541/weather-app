@@ -9,7 +9,10 @@ export const getWeather = async (latitude = 52.52, longitude = 13.41) => {
         latitude,
         longitude,
         current_weather: true, // fetch current temperature & wind
-        hourly: "temperature_2m,relative_humidity_2m,wind_speed_10m",
+        daily:
+          "temperature_2m_max,temperature_2m_min,precipitation_sum,wind_speed_10m_max",
+        timezone: "auto",
+        forecast_days: 7,
       },
     });
     console.log("API response:", response.data); // ✅ logs the full JSON
