@@ -16,6 +16,7 @@ export async function getWeather(lat, lon) {
     if (!response.ok) {
       throw new Error(`Weather API error: ${response.status}`);
     }
+    
 
     const data = await response.json();
     console.log('Open-Meteo response:', data);
