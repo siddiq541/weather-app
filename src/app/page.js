@@ -3,40 +3,35 @@ import LocationSelector from "@/components/LocationSelector";
 import WeatherSummary from "@/components/WeatherSummary";
 import { useEffect, useState } from "react";
 import { getWeather } from "../lib/weatherService";
-
+import { getWeatherSummary, getBackgroundClass } from "../lib/weatherUtils";
 export default function Page() {
   const [selectedCity, setSelectedCity] = useState(null);
   const [weather, setWeather] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [bgClass, setBgClass] = useState("default-bg");
-
+  const [weatherData, setWeatherData] = useState(null);
   // 🌦️ Assign CSS class instead of static image
-  const getBackgroundClass = (code) => {
-    if (!code) return "default-bg";
-
-    if ([0, 1].includes(code)) return "sunny-bg"; // ☀️ Sunny
-    if ([2, 3].includes(code)) return "cloudy-bg"; // ☁️ Cloudy
-    if ([51, 53, 55, 61, 63, 65].includes(code)) return "rainy-bg"; // 🌧️ Rainy
-    if ([71, 73, 75].includes(code)) return "snowy-bg"; // ❄️ Snowy
-    if ([95, 96, 99].includes(code)) return "storm-bg"; // ⛈️ Thunderstorm
-    return "default-bg";
-  };
 
   useEffect(() => {
     const fetchData = async () => {
       if (!selectedCity) return;
       setLoading(true);
       setError(null);
+
       try {
         const data = await getWeather(selectedCity.lat, selectedCity.lon);
-        setWeather(data);
+        if (!data) throw new Error("Weather data unavailable");
 
-        const code = data.current_weather?.weathercode;
+        setWeather(data.current);
+        setWeatherData(data.daily);
+
+        const code = data.current?.weathercode || data.daily[0]?.weatherCode;
         setBgClass(getBackgroundClass(code));
       } catch (err) {
         setError(err.message || "Unable to fetch weather data.");
         setWeather(null);
+        setWeatherData(null);
       } finally {
         setLoading(false);
       }
@@ -46,13 +41,13 @@ export default function Page() {
 
   return (
     <main
-      className={`min-h-screen text-white flex flex-col items-center justify-start p-6 transition-all duration-1000 bg-cover bg-center ${bgClass}`}
+      className={`min-h-screen text-white flex flex-col items-center justify-start p-6 transition-all duration-1000 bg-cover bg-center ${bgClass} `}
     >
-      <div className="mt-20 w-full max-w-md bg-black/50 backdrop-blur-md rounded-xl shadow-lg p-6 border border-white/20">
-        <h1 className="text-3xl font-bold text-center mb-4 tracking-wide">
+      <div className="w-full max-w-md p-6 mt-20 border shadow-lg bg-black/50 backdrop-blur-md rounded-xl border-white/20">
+        <h1 className="mb-4 text-3xl font-bold tracking-wide text-center">
           🌤️ Weather Snapshot
         </h1>
-        <p className="text-center text-sm text-white/80 mb-6">
+        <p className="mb-6 text-sm text-center text-white/80">
           Search for a city to see the forecast
         </p>
 
@@ -64,42 +59,42 @@ export default function Page() {
           </p>
         )}
 
-        {error && <p className="mt-4 text-red-400 text-center">{error}</p>}
+        {error && <p className="mt-4 text-center text-red-400">{error}</p>}
 
         {selectedCity && weather && (
-          <div className="mt-6 bg-white/10 p-4 rounded-lg border border-white/20">
-            <h2 className="text-xl font-semibold mb-2">Current Weather</h2>
+          <div className="p-4 mt-6 border rounded-lg bg-white/10 border-white/20">
+            <h2 className="mb-2 text-xl font-semibold">Current Weather</h2>
             <p>
               City: {selectedCity.name}, {selectedCity.country}
             </p>
             <p>
-              Temperature:{" "}
-              {weather.current_weather?.temperature !== undefined
-                ? `${weather.current_weather.temperature}°C`
+              Temperature: {console.log(weather)}
+              {weather?.temperature !== undefined
+                ? `${weather.temperature}°C`
                 : "Unavailable"}
             </p>
             <p>
               Wind Speed:{" "}
-              {weather.current_weather?.windspeed !== undefined
-                ? `${weather.current_weather.windspeed} km/h`
+              {weather?.windspeed !== undefined
+                ? `${weather.windspeed} km/h`
                 : "Unavailable"}
             </p>
             <p>
-              Time:{" "}
-              {weather.current_weather?.time
-                ? new Date(weather.current_weather.time).toLocaleString()
+              Weather:{" "}
+              {weather?.weatherCode !== undefined
+                ? getWeatherSummary(weather.weatherCode)
                 : "Unavailable"}
             </p>
+            <p>Time: {weather.time ?? "Unavailable"}</p>
           </div>
         )}
       </div>
 
       {selectedCity && (
-        <div className="mt-8 w-full max-w-6xl fade-in">
-          <WeatherSummary />
+        <div className="w-full max-w-6xl mt-8 fade-in">
+          <WeatherSummary weatherData={weatherData} />
         </div>
       )}
     </main>
   );
 }
- 

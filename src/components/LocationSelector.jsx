@@ -1,10 +1,10 @@
-'use client';
-import { useState, useEffect } from 'react';
-import axios from 'axios';
-import PropTypes from 'prop-types';
+"use client";
+import { useState, useEffect } from "react";
+import axios from "axios";
+import PropTypes from "prop-types";
 
 export default function LocationSelector({ onCityFound }) {
-  const [city, setCity] = useState('');
+  const [city, setCity] = useState("");
   const [suggestions, setSuggestions] = useState([]);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -20,12 +20,14 @@ export default function LocationSelector({ onCityFound }) {
 
       try {
         const res = await axios.get(
-          `https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(city)}&count=10&language=en&format=json`
+          `https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(
+            city
+          )}&count=10&language=en&format=json`
         );
         setSuggestions(res.data.results || []);
         setShowDropdown(true);
       } catch (err) {
-        console.error('Geocoding error:', err.message);
+        console.error("Geocoding error:", err.message);
         setSuggestions([]);
         setShowDropdown(false);
       }
@@ -38,13 +40,13 @@ export default function LocationSelector({ onCityFound }) {
   const handleSelect = (location) => {
     const { latitude: lat, longitude: lon, name, country, admin1 } = location;
     onCityFound({ lat, lon, name, country, admin1 });
-    setCity(`${name}, ${admin1 || ''}, ${country}`);
+    setCity(`${name}, ${admin1 || ""}, ${country}`);
     setSuggestions([]);
     setShowDropdown(false);
   };
 
   return (
-    <div className="flex flex-col items-center gap-2 mt-4 relative w-full sm:w-80">
+    <div className="relative flex flex-col items-center w-full gap-2 mx-auto mt-4 sm:w-80">
       <input
         value={city}
         onChange={(e) => {
@@ -52,25 +54,25 @@ export default function LocationSelector({ onCityFound }) {
           setError(null);
         }}
         placeholder="Start typing a city name..."
-        className="border p-2 rounded w-full focus:outline-none focus:ring-2 focus:ring-blue-400 text-black placeholder-gray-400"
+        className="w-full p-2 text-black placeholder-gray-400 border rounded focus:outline-none focus:ring-2 focus:ring-blue-400"
       />
 
       {showDropdown && suggestions.length > 0 && (
-        <ul className="absolute top-full mt-1 w-full bg-white text-black border border-gray-300 rounded shadow-lg max-h-60 overflow-y-auto z-10">
+        <ul className="absolute z-10 w-full mt-1 overflow-y-auto text-black bg-white border border-gray-300 rounded shadow-lg top-full max-h-60">
           {suggestions.map((loc, index) => (
             <li
               key={`${loc.id}-${index}`}
               onClick={() => handleSelect(loc)}
-              className="px-4 py-2 hover:bg-blue-100 cursor-pointer"
+              className="px-4 py-2 cursor-pointer hover:bg-blue-100"
             >
               {loc.name}
-              {loc.admin1 ? `, ${loc.admin1}` : ''}, {loc.country}
+              {loc.admin1 ? `, ${loc.admin1}` : ""}, {loc.country}
             </li>
           ))}
         </ul>
       )}
 
-      {error && <p className="text-red-500 text-sm text-center">{error}</p>}
+      {error && <p className="text-sm text-center text-red-500">{error}</p>}
     </div>
   );
 }
@@ -78,4 +80,3 @@ export default function LocationSelector({ onCityFound }) {
 LocationSelector.propTypes = {
   onCityFound: PropTypes.func.isRequired,
 };
-
